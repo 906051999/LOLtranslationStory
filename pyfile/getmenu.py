@@ -1,34 +1,17 @@
 import os
 from bs4 import BeautifulSoup
 
-styles = """
-body {
-    font-family: Arial, sans-serif;
-}
-h1 {
-    color: #333;
-    font-size: 2em;
-}
-p {
-    font-size: 1em;
-    line-height: 1.6;
-    color: #666;
-}
-"""
 
 source_dir = '../pages'
 links = []
 
 for root, dirs, files in os.walk(source_dir):
     for dir in dirs:
-        replace_html_path = os.path.join(root, dir, 'replace.html')
+        replace_html_path = os.path.join(root, dir, 'origin.html')
         if os.path.exists(replace_html_path):
             with open(replace_html_path, 'r') as f:
                 soup = BeautifulSoup(f, 'html.parser')
 
-            style_tag = soup.new_tag("style")
-            style_tag.string = styles
-            soup.head.append(style_tag)
             pretty_html = soup.prettify()
 
             with open(replace_html_path, 'w') as f:
