@@ -25,26 +25,28 @@ def replace_content(path, file_name):
         # Get the URL of the image
         img_url = img_tag.get('src')
 
-        # If the URL does not end with .jpg, skip this iteration
-        if not img_url.endswith('.jpg'):
-            img_tag.decompose()
-            continue
-
         print(img_url)
 
+        # If the URL does not end with .jpg,
+        if not img_url.endswith('.jpg'):
+            if img_url.split('/')[+3] == 'cfwebcap':
+                img_name = img_url.split('/')[+5] + ".jpg"
+            else:
+                img_tag.decompose()
+                continue
+        else:
+            img_name = os.path.basename(img_url)
         # Download the image and save it to a local directory
-        img_name = os.path.basename(img_url)
         img_path = os.path.join(img_dir, img_name)
         urllib.request.urlretrieve(img_url, img_path)
 
-        img_tag['src'] = f"/source/{file_name}/images/{img_name}"
+        img_tag['src'] = f"/pages/{file_name}/images/{img_name}"
 
         # # Replace the src attribute with the local path of the image
         # img_tag['src'] = img_path
 
-    # 使用 prettify 方法格式化 HTML
     pretty_html = html_soup.prettify()
-    # 将格式化后的 HTML 写入文件
+
     with open(replace_html_path, 'w', encoding='utf-8') as f:
         f.write(pretty_html)
 
@@ -75,7 +77,7 @@ if __name__ == '__main__':
         article_time = page.ele(".art-time").text
 
         # Extract the date part from article_time
-        date_part = "../source/" + article_time.split(' ')[0]
+        date_part = "../pages/" + article_time.split(' ')[0]
         date = article_time.split(' ')[0]
         # Assuming article_time is in 'YYYY-MM-DD HH:MM:SS' format
 
@@ -99,6 +101,8 @@ if __name__ == '__main__':
             f.write(f'<div class="time">{article_time}</div>\n')
             f.write(article_html)
         print(f"{date_part}: origin.html 已创建")
+
+        page.close()
 
         replace_content(date_part, date)
 
