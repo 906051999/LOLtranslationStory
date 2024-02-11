@@ -1,9 +1,12 @@
 import os
 from bs4 import BeautifulSoup
 
-
 source_dir = '../pages'
 links = []
+
+# Open url.txt file
+with open('url.txt', 'r') as url_file:
+    url_lines = url_file.readlines()
 
 for root, dirs, files in os.walk(source_dir):
     for dir in dirs:
@@ -20,7 +23,18 @@ for root, dirs, files in os.walk(source_dir):
             title = soup.title.string if soup.title else 'No Title'
             article = soup.find('div', {'class': 'article'})
             summary = article if article else 'No Summary'
+
             link = f'<a href="{replace_html_path}" target="_blank">{title}</a>'
+            # Iterate over each line in url.txt
+            for line in url_lines:
+                line_soup = BeautifulSoup(line, 'html.parser')
+                a_text = line_soup.get_text() if line_soup.a else ''
+                # If the text within <a> tag matches the title (ignoring leading/trailing whitespace),
+                # set link to be this line
+                if a_text.strip() == title.strip():
+                    link = line
+                    break
+
             links.append((dir, link, summary))
 
 links.sort(reverse=True)
