@@ -42,7 +42,7 @@ for root, dirs, files in os.walk(source_dir):
 
 links.sort(reverse=True)
 
-path = os.path.join(source_dir, 'index.html')
+path = os.path.join("../", 'index.html')
 
 with open(path, 'w') as f:
     f.write('<html lang="zh-CN">\n')
